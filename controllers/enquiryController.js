@@ -1,18 +1,20 @@
-const Enquiry = require('../models/Enquiry');
+const Enquiry = require("../models/Enquiry");
 
 const createEnquiry = async (req, res) => {
   try {
-    const { name, email, phone, message } = req.body;
+    const { name, email, subject, message } = req.body;
 
-    if (!name || !email || !message) {
-      return res.status(400).json({ message: 'Please fill all required fields' });
+    if (!name || !email || !subject || !message) {
+      return res
+        .status(400)
+        .json({ message: "Please fill all required fields" });
     }
 
     const enquiry = await Enquiry.create({
       userId: req.user._id,
       name,
       email,
-      phone,
+      subject,
       message,
     });
 
@@ -22,17 +24,17 @@ const createEnquiry = async (req, res) => {
   }
 };
 
-
 const getMyEnquiries = async (req, res) => {
   try {
-    const enquiries = await Enquiry.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const enquiries = await Enquiry.find({ userId: req.user._id }).sort({
+      createdAt: -1,
+    });
 
     res.status(200).json(enquiries);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 const getAllEnquiries = async (req, res) => {
   try {
@@ -42,7 +44,7 @@ const getAllEnquiries = async (req, res) => {
     if (status) filter.status = status;
 
     const enquiries = await Enquiry.find(filter)
-      .populate('userId', 'name email')
+      .populate("userId", "name email")
       .sort({ createdAt: -1 });
 
     res.status(200).json(enquiries);
@@ -51,18 +53,17 @@ const getAllEnquiries = async (req, res) => {
   }
 };
 
-
 const updateEnquiryStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
-    if (!['new', 'in_progress', 'resolved'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status value' });
+    if (!["new", "pending", "resolved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
     }
 
     const enquiry = await Enquiry.findById(req.params.id);
     if (!enquiry) {
-      return res.status(404).json({ message: 'Enquiry not found' });
+      return res.status(404).json({ message: "Enquiry not found" });
     }
 
     enquiry.status = status;
@@ -74,21 +75,25 @@ const updateEnquiryStatus = async (req, res) => {
   }
 };
 
-
 const deleteEnquiry = async (req, res) => {
   try {
     const enquiry = await Enquiry.findById(req.params.id);
     if (!enquiry) {
-      return res.status(404).json({ message: 'Enquiry not found' });
+      return res.status(404).json({ message: "Enquiry not found" });
     }
 
     await enquiry.deleteOne();
 
-    res.status(200).json({ message: 'Enquiry deleted successfully' });
+    res.status(200).json({ message: "Enquiry deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = {createEnquiry,getMyEnquiries,getAllEnquiries,updateEnquiryStatus,
-  deleteEnquiry,};
+module.exports = {
+  createEnquiry,
+  getMyEnquiries,
+  getAllEnquiries,
+  updateEnquiryStatus,
+  deleteEnquiry,
+};

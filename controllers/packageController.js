@@ -1,7 +1,7 @@
 const Package = require('../models/Package');
 const createPackage = async (req, res) => {
   try {
-    const { title, description, location, route, price, duration, category, image, availability } = req.body;
+    const { title, description, location, route, price, duration, category, image, availablePackages } = req.body;
 
     
     if (!title || !description || !location || !price || !duration) {
@@ -17,7 +17,7 @@ const createPackage = async (req, res) => {
       duration,
       category,
       image,
-      availability,
+      availablePackages,
     });
 
     res.status(201).json(newPackage);
@@ -28,11 +28,9 @@ const createPackage = async (req, res) => {
 
 const getAllPackages = async (req, res) => {
   try {
-    const { location, minPrice, maxPrice, category, search, page = 1, limit = 10 } = req.query;
-
-  
+    const { location, minPrice, maxPrice, category, search, page = 1, limit = 10 } = req.query;  
     const filter = {};
-
+    
     if (location) {
       filter.location = { $regex: location, $options: 'i' }; 
     }
@@ -100,7 +98,7 @@ const updatePackage = async (req, res) => {
       return res.status(404).json({ message: 'Package not found' });
     }
 
-    const { title, description, location, route, price, duration, category, image, rating, availability } = req.body;
+    const { title, description, location, route, price, duration, category, image, rating, availablePackages } = req.body;
 
     
     pkg.title = title ?? pkg.title;
@@ -112,7 +110,7 @@ const updatePackage = async (req, res) => {
     pkg.category = category ?? pkg.category;
     pkg.image = image ?? pkg.image;
     pkg.rating = rating ?? pkg.rating;
-    pkg.availability = availability ?? pkg.availability;
+    pkg.availablePackages = availablePackages ?? pkg.availablePackages;
 
     const updatedPackage = await pkg.save();
 

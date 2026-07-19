@@ -15,7 +15,7 @@ const createBooking = async (req, res) => {
       return res.status(404).json({ message: 'Package not found' });
     }
 
-    if (!pkg.availability) {
+    if (!pkg.availablePackages < 0 ) {
       return res.status(400).json({ message: 'This package is currently not available for booking' });
     }
 
